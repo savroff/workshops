@@ -4,7 +4,7 @@ class ProductsController < ApplicationController
   expose(:product)
   expose(:review) { Review.new }
   expose_decorated(:reviews, ancestor: :product)
-
+  before_filter :authenticate_user!
   def index
   end
 
@@ -15,36 +15,62 @@ class ProductsController < ApplicationController
   end
 
   def edit
+    if user_signed_in?
+      if current_user.id != product.user_id
+        redirect_to category_product_url(category, product), flash: {error: "You are not allowed to edit this product." }
+      end
+    else
+      redirect_to(new_user_session_path)      
+    end
   end
 
   def create
-    self.product = Product.new(product_params)
-
-    if product.save
-      category.products << product
-      redirect_to category_product_url(category, product), notice: 'Product was successfully created.'
+    if user_signed_in?
+      self.product = Product.new(product_params)
+      if product.save
+        category.products << product
+        redirect_to category_product_url(category, product), notice: 'Product was successfully created.'
+      else
+        render action: 'new'
+      end
     else
-      render action: 'new'
+      redirect_to(new_user_session_path)
     end
   end
 
   def update
-    if self.product.update(product_params)
-      redirect_to category_product_url(category, product), notice: 'Product was successfully updated.'
+    if user_signed_in?
+      if current_user.id == product.user_id
+        if self.product.update(product_params)
+        redirect_to category_product_url(category, product), notice: 'Product was successfully updated.'
+        else
+        render action: 'edit'
+        end
+      else
+        redirect_to category_product_url(category, product), flash: {error: "You are not allowed to edit this product." }
+      end
     else
-      render action: 'edit'
+      redirect_to(new_user_session_path)
     end
   end
 
   # DELETE /products/1
   def destroy
-    product.destroy
-    redirect_to category_url(product.category), notice: 'Product was successfully destroyed.'
+    if user_signed_in?
+      if current_user.id == product.user_id || current_user.try(:admin?)
+        product.destroy
+        redirect_to category_url(product.category)
+      else
+        redirect_to category_product_url(category, product), error: "You are not allowed to edit this product."
+      end
+    else
+      redirect_to(new_user_session_path)
+    end
   end
 
   private
 
   def product_params
-    params.require(:product).permit(:title, :description, :price, :category_id)
+    params.require(:product).permit(:title, :description, :price, :category_id, :user_id)
   end
 end

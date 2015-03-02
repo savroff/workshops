@@ -1,17 +1,21 @@
 %p#notice= notice
+.col-sm-8
+  %h1.category-name
+    %b= category.name
+    Products: 
 
-%p
-  %b Name:
-  = category.name
-
-%p
-  - category.products.each do |product|
-    = product.title
-
-%p
-  %h3 New product
-  = render 'products/form'
-
-= link_to 'Edit', edit_category_path(category)
-\|
-= link_to 'Back', categories_path, class: 'btn btn-primary'
+  %p
+    - category.products.each do |product|
+      %p
+        = link_to product.title, category_product_path(product.category, product), :class => "product-list-title"
+.col-sm-4
+  %p
+    %h3 Add New Product
+    = render 'products/form'
+  -if current_user.try(:admin?)
+    = link_to 'Edit Category', edit_category_path(category)
+    %br
+    %br
+    = link_to 'Edit Products From This Category', category_products_path(category.id), :class => "new-cat"
+    
+= link_to 'Back', categories_path, class: 'btn btn-default back'

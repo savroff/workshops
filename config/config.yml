@@ -1,5 +1,6 @@
 defaults: &defaults
   workshops_name: 'Netguru Szczecin Workshops 2015'
+  workshops_menu_log: 'Log in'
 
 development:
   <<: *defaults

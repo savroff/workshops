@@ -2,6 +2,13 @@ class ReviewsController < ApplicationController
 
   expose(:review)
   expose(:product)
+  before_filter :authenticate_user!
+  def index
+    @reviews = Review.all
+  end
+
+  def new
+  end
 
   def edit
   end
@@ -22,8 +29,12 @@ class ReviewsController < ApplicationController
     redirect_to category_product_url(product.category, product), notice: 'Review was successfully destroyed.'
   end
 
+  def show
+    @review = Review.find(:id => params[:id])
+  end
+
   private
     def review_params
-      params.require(:review).permit(:content, :rating)
+      params.require(:review).permit(:content, :rating, :user_id)
     end
 end

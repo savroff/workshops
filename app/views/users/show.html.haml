@@ -1,0 +1,30 @@
+.col-sm-4
+  %h2.product-title User Profile
+  %b.user-col
+    %h3
+      =@user.firstname
+      =@user.lastname
+    %br
+  %p 
+    E-mail adress:
+    =@user.email
+  %p
+    User Since:
+    =@user.created_at.to_formatted_s(:short)
+  %p
+    Last Activity:
+    =@user.last_sign_in_at.to_formatted_s(:short)
+  -if current_user.try(:admin?)
+    %p This is an admin account
+
+.col-sm-8
+  %h2 Latest Reviews
+  - @review.each do |rev|
+    .rev-cont
+      %p= rev.content
+      %p.rev-rating
+        Rating: 
+        %b= rev.rating
+        %p
+          Date:
+          = rev.created_at.to_formatted_s(:short)
