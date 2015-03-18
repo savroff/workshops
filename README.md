@@ -1,6 +1,8 @@
 **Source code**
 
-Clone it (`git clone git@github.com:nekath/workshops.git`). Then push it to our githoub account.
+Clone it (`git clone git@github.com:nekath/workshops.git`). Then push it to our github account.
+
+Please use mutliple commits to flag your changes.
 
 **Database**
 
@@ -13,7 +15,6 @@ Make sure the user you've listed in `database.yml` is created for postgres:
 Setup the database for your application (development and test environments):
 `bin/rake db:setup`
 `bin/rake db:test:prepare`
-
 
 ### Issues to solve:
 
